@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const menuToggle = document.getElementById('menuToggle');
   const navMenu = document.getElementById('navMenu');
   const navOverlay = document.getElementById('navOverlay');
-  const navClose = document.getElementById('navClose'); // New Close Button
+  const navClose = document.getElementById('navClose');
   
   function closeMenu() {
     menuToggle.classList.remove('active');

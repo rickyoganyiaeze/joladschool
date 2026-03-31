@@ -11,8 +11,9 @@
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://www.jotladschools.com.ng/about.html" />
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png">
+ <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/public/images/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/public/images/favicon.png">
   
   <!-- Styles & Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -40,12 +41,12 @@
     </div>
   </div>
 
-  <!-- Navigation -->
-  <header class="navbar">
+   <!-- Navigation -->
+  <header class="navbar" role="banner">
     <div class="container navbar-content">
       <div class="logo-container">
         <a href="basic.html" class="logo">
-          <img src="basicschoollogo.png" alt="Jotlad Nursery & Basic Logo" class="logo-img">
+           <img src="/public/images/basicschoollogo.png" alt="Jotlad Nursery & Basic Logo" class="logo-img">
           <div class="logo-text">
             <span>Jotlad Nursery & Basic</span>
             <span>Success Through The Fear Of God</span>
@@ -53,21 +54,19 @@
         </a>
         <div class="logo-divider"></div>
         <a href="college.html" class="logo">
-          <img src="collegeschoollogo.png" alt="Jotlad Model College Logo" class="logo-img">
+           <img src="/public/images/collegeschoollogo.png" alt="Jotlad Model College Logo" class="logo-img">
           <div class="logo-text">
             <span>Jotlad Model College</span>
             <span>Christ Our Conerstone</span>
           </div>
         </a>
       </div>
-      
       <nav role="navigation" aria-label="Main navigation">
         <div class="nav-menu" id="navMenu">
-          <!-- Close Button (X) -->
           <button class="nav-close" id="navClose" aria-label="Close menu">
             <i class="fas fa-times"></i>
           </button>
-          
+
           <ul>
             <li><a href="index.html" class="nav-link">Home</a></li>
             <li><a href="about.html" class="nav-link active">About</a></li>
@@ -75,12 +74,17 @@
             <li><a href="college.html" class="nav-link">College</a></li>
             <li><a href="gallery.html" class="nav-link">Gallery</a></li>
             <li><a href="contact.html" class="nav-link">Contact</a></li>
-            <li class="nav-cta"><a href="admissions.html" class="btn btn-accent">Admissions</a></li>
+            <li class="nav-cta-mobile"><a href="result-checker" class="btn btn-outline">Check Result</a></li>
+            <li class="nav-cta-mobile"><a href="admissions.html" class="btn btn-accent">Admissions</a></li>
           </ul>
         </div>
+        <div class="nav-cta-buttons">
+          <a href="result-checker" class="btn btn-outline">Check Result</a>
+          <a href="admissions.html" class="btn btn-accent">Admissions</a>
+        </div>
       </nav>
-      
-      <button class="menu-toggle" id="menuToggle">
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu">
         <span></span>
         <span></span>
         <span></span>

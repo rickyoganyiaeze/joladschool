@@ -297,7 +297,12 @@
 .admin-logo {
   text-align: center;
   margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3rem;
 }
+
 
 .admin-logo img {
   width: 80px;
