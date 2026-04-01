@@ -33,10 +33,17 @@ console.log("API Secret:", process.env.CLOUDINARY_API_SECRET ? "Found" : "❌ MI
 // Cloudinary Storage for PDFs
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: {
-    folder: 'jotlad-results',
-    allowed_formats: ['pdf'],
-    resource_type: 'raw'
+  params: async (req, file) => {
+    // Extract the original name without extension
+    const originalName = file.originalname.split('.').slice(0, -1).join('.');
+
+    return {
+      folder: 'jotlad-results',
+      allowed_formats: ['pdf'],
+      resource_type: 'raw',
+      // This forces the file to end with .pdf
+      public_id: `${originalName}.pdf`
+    };
   }
 });
 
@@ -223,8 +230,12 @@ app.post('/api/admin/upload', authMiddleware, upload.single('pdf'), async (req, 
     const { admissionNumber, studentName, class: studentClass, term, year } = req.body;
     
     if (!req.file) {
+      console.error('Upload Error: No file received');
       return res.status(400).json({ message: 'PDF file is required' });
     }
+
+    // Log the file info to see if it uploaded to Cloudinary
+    console.log('File uploaded to Cloudinary:', req.file.path);
     
     const result = new Result({
       admissionNumber: admissionNumber.toUpperCase(),
@@ -233,20 +244,21 @@ app.post('/api/admin/upload', authMiddleware, upload.single('pdf'), async (req, 
       term,
       year,
       pdfUrl: req.file.path,
-      publicId: req.file.filename,
-      originalName: req.file.originalname // Add this line
+      publicId: req.file.filename
     });
     
     await result.save();
     res.json({ success: true, message: 'Result uploaded successfully', result });
   } catch (error) {
-    console.error("Upload Error Details:", error);
+    // This will print the REAL error message in Render logs
+    console.error('Upload Error Details:', error.message); 
+    
     if (error.code === 11000) {
       return res.status(400).json({ 
         message: 'Result already exists for this student/class/term/year' 
       });
     }
-    res.status(500).json({ success: false, message: error.message || 'Server error' });
+    res.status(500).json({ success: false, message: 'Server error: ' + error.message });
   }
 });
 
