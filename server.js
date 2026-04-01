@@ -24,7 +24,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-// Cloudinary Storage for PDFs
+// Cloudinary Storage for PDFs (Fixed for correct filenames)
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req, file) => {
@@ -40,7 +40,7 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage: storage });
 
-// ============ SCHEMAS & MODELS (MOVED TO TOP) ============
+// ============ SCHEMAS & MODELS ============
 
 // Result Schema
 const resultSchema = new mongoose.Schema({
@@ -74,7 +74,6 @@ mongoose.connect(process.env.MONGO_URI)
     console.log('✅ Connected to MongoDB Atlas');
 
     // --- AUTO-CREATE ADMIN USER ---
-    // Check if any admin exists. If not, create the default one.
     try {
       const adminExists = await Admin.findOne({ username: 'admin' });
       if (!adminExists) {
@@ -88,8 +87,6 @@ mongoose.connect(process.env.MONGO_URI)
     } catch (err) {
       console.error('Error creating admin:', err);
     }
-    // ------------------------------
-
   })
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
@@ -110,7 +107,6 @@ const authMiddleware = (req, res, next) => {
 
 // ============ PUBLIC ROUTES ============
 
-// Check if admission number exists
 app.post('/api/check-admission', async (req, res) => {
   try {
     const { admissionNumber } = req.body;
@@ -119,23 +115,15 @@ app.post('/api/check-admission', async (req, res) => {
     }).select('class term year studentName');
     
     if (results.length === 0) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Invalid Admission Number' 
-      });
+      return res.status(404).json({ success: false, message: 'Invalid Admission Number' });
     }
     
-    res.json({ 
-      success: true, 
-      studentName: results[0].studentName,
-      results: results 
-    });
+    res.json({ success: true, studentName: results[0].studentName, results: results });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 
-// Get available classes/terms/years for student
 app.post('/api/student-options', async (req, res) => {
   try {
     const { admissionNumber } = req.body;
@@ -153,7 +141,6 @@ app.post('/api/student-options', async (req, res) => {
   }
 });
 
-// Get specific result PDF
 app.post('/api/get-result', async (req, res) => {
   try {
     const { admissionNumber, class: studentClass, term, year } = req.body;
@@ -166,10 +153,7 @@ app.post('/api/get-result', async (req, res) => {
     });
     
     if (!result) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Result not found for the selected criteria' 
-      });
+      return res.status(404).json({ success: false, message: 'Result not found' });
     }
     
     res.json({ success: true, result });
@@ -180,7 +164,6 @@ app.post('/api/get-result', async (req, res) => {
 
 // ============ ADMIN ROUTES ============
 
-// Admin Login
 app.post('/api/admin/login', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -202,7 +185,7 @@ app.post('/api/admin/login', async (req, res) => {
   }
 });
 
-// Create initial admin (manual backup)
+// Manual admin creation (backup)
 app.post('/api/admin/create', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -222,7 +205,6 @@ app.post('/api/admin/create', async (req, res) => {
   }
 });
 
-// Get all results (Admin)
 app.get('/api/admin/results', authMiddleware, async (req, res) => {
   try {
     const results = await Result.find().sort({ createdAt: -1 });
@@ -232,7 +214,7 @@ app.get('/api/admin/results', authMiddleware, async (req, res) => {
   }
 });
 
-// Upload result (Admin)
+// Upload Result (IMPROVED ERROR HANDLING)
 app.post('/api/admin/upload', authMiddleware, upload.single('pdf'), async (req, res) => {
   try {
     const { admissionNumber, studentName, class: studentClass, term, year } = req.body;
@@ -254,16 +236,17 @@ app.post('/api/admin/upload', authMiddleware, upload.single('pdf'), async (req, 
     await result.save();
     res.json({ success: true, message: 'Result uploaded successfully', result });
   } catch (error) {
+    console.error("Upload Error Details:", error); // LOG ACTUAL ERROR
+    
     if (error.code === 11000) {
-      return res.status(400).json({ 
-        message: 'Result already exists for this student/class/term/year' 
-      });
+      return res.status(400).json({ message: 'Result already exists for this student/class/term/year' });
     }
-    res.status(500).json({ success: false, message: 'Server error' });
+    // Return the actual error message to help debug
+    res.status(500).json({ success: false, message: error.message || 'Server error' });
   }
 });
 
-// Update result (Admin)
+// Update Result (IMPROVED ERROR HANDLING)
 app.put('/api/admin/results/:id', authMiddleware, upload.single('pdf'), async (req, res) => {
   try {
     const { id } = req.params;
@@ -274,7 +257,6 @@ app.put('/api/admin/results/:id', authMiddleware, upload.single('pdf'), async (r
       return res.status(404).json({ message: 'Result not found' });
     }
     
-    // If new PDF uploaded, delete old one
     if (req.file) {
       await cloudinary.uploader.destroy(result.publicId, { resource_type: 'raw' });
       result.pdfUrl = req.file.path;
@@ -290,11 +272,11 @@ app.put('/api/admin/results/:id', authMiddleware, upload.single('pdf'), async (r
     await result.save();
     res.json({ success: true, message: 'Result updated successfully', result });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error("Update Error Details:", error); // LOG ACTUAL ERROR
+    res.status(500).json({ success: false, message: error.message || 'Server error' });
   }
 });
 
-// Delete result (Admin)
 app.delete('/api/admin/results/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
@@ -304,10 +286,7 @@ app.delete('/api/admin/results/:id', authMiddleware, async (req, res) => {
       return res.status(404).json({ message: 'Result not found' });
     }
     
-    // Delete from Cloudinary
     await cloudinary.uploader.destroy(result.publicId, { resource_type: 'raw' });
-    
-    // Delete from database
     await Result.findByIdAndDelete(id);
     
     res.json({ success: true, message: 'Result deleted successfully' });
@@ -316,7 +295,6 @@ app.delete('/api/admin/results/:id', authMiddleware, async (req, res) => {
   }
 });
 
-// Get single result (Admin)
 app.get('/api/admin/results/:id', authMiddleware, async (req, res) => {
   try {
     const result = await Result.findById(req.params.id);
