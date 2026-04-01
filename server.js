@@ -33,10 +33,20 @@ console.log("API Secret:", process.env.CLOUDINARY_API_SECRET ? "Found" : "❌ MI
 // Cloudinary Storage for PDFs
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: {
-    folder: 'jotlad-results',
-    allowed_formats: ['pdf'],
-    resource_type: 'raw'
+  params: async (req, file) => {
+    // Generate a safe filename
+    const originalName = file.originalname.replace(/\.[^/.]+$/, ""); // Remove extension
+    const timestamp = Date.now();
+    return {
+      folder: 'jotlad-results',
+      allowed_formats: ['pdf'],
+      resource_type: 'raw',
+      // Attach the filename as metadata so we can use it later
+      public_id: `${originalName}_${timestamp}`,
+      // This flag tells Cloudinary to handle the extension correctly
+      use_filename: true,
+      unique_filename: false
+    };
   }
 });
 
@@ -53,6 +63,7 @@ const resultSchema = new mongoose.Schema({
   year: { type: String, required: true },
   pdfUrl: { type: String, required: true },
   publicId: { type: String, required: true },
+  originalName: { type: String }, // Add this line
   createdAt: { type: Date, default: Date.now }
 });
 resultSchema.index({ admissionNumber: 1, class: 1, term: 1, year: 1 }, { unique: true });
@@ -112,14 +123,14 @@ const authMiddleware = (req, res, next) => {
 app.post('/api/check-admission', async (req, res) => {
   try {
     const { admissionNumber } = req.body;
-    const results = await Result.find({ 
-      admissionNumber: admissionNumber.toUpperCase() 
+    const results = await Result.find({
+      admissionNumber: admissionNumber.toUpperCase()
     }).select('class term year studentName');
-    
+
     if (results.length === 0) {
       return res.status(404).json({ success: false, message: 'Invalid Admission Number' });
     }
-    
+
     res.json({ success: true, studentName: results[0].studentName, results: results });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error' });
@@ -129,14 +140,14 @@ app.post('/api/check-admission', async (req, res) => {
 app.post('/api/student-options', async (req, res) => {
   try {
     const { admissionNumber } = req.body;
-    const results = await Result.find({ 
-      admissionNumber: admissionNumber.toUpperCase() 
+    const results = await Result.find({
+      admissionNumber: admissionNumber.toUpperCase()
     }).select('class term year');
-    
+
     const classes = [...new Set(results.map(r => r.class))];
     const terms = [...new Set(results.map(r => r.term))];
     const years = [...new Set(results.map(r => r.year))];
-    
+
     res.json({ success: true, classes, terms, years });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error' });
@@ -146,18 +157,18 @@ app.post('/api/student-options', async (req, res) => {
 app.post('/api/get-result', async (req, res) => {
   try {
     const { admissionNumber, class: studentClass, term, year } = req.body;
-    
+
     const result = await Result.findOne({
       admissionNumber: admissionNumber.toUpperCase(),
       class: studentClass,
       term: term,
       year: year
     });
-    
+
     if (!result) {
       return res.status(404).json({ success: false, message: 'Result not found' });
     }
-    
+
     res.json({ success: true, result });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error' });
@@ -170,16 +181,16 @@ app.post('/api/admin/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     const admin = await Admin.findOne({ username });
-    
+
     if (!admin) {
       return res.status(400).json({ message: 'Invalid username or password' });
     }
-    
+
     const validPassword = await bcrypt.compare(password, admin.password);
     if (!validPassword) {
       return res.status(400).json({ message: 'Invalid username or password' });
     }
-    
+
     const token = jwt.sign({ id: admin._id, username: admin.username }, JWT_SECRET, { expiresIn: '24h' });
     res.json({ success: true, token, username: admin.username });
   } catch (error) {
@@ -192,15 +203,15 @@ app.post('/api/admin/create', async (req, res) => {
   try {
     const { username, password } = req.body;
     const existingAdmin = await Admin.findOne({ username });
-    
+
     if (existingAdmin) {
       return res.status(400).json({ message: 'Admin already exists' });
     }
-    
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const admin = new Admin({ username, password: hashedPassword });
     await admin.save();
-    
+
     res.json({ success: true, message: 'Admin created successfully' });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error' });
@@ -216,7 +227,7 @@ app.get('/api/admin/results', authMiddleware, async (req, res) => {
   }
 });
 
-// Upload Result (IMPROVED ERROR HANDLING)
+// Upload result (Admin)
 app.post('/api/admin/upload', authMiddleware, upload.single('pdf'), async (req, res) => {
   try {
     const { admissionNumber, studentName, class: studentClass, term, year } = req.body;
@@ -232,18 +243,18 @@ app.post('/api/admin/upload', authMiddleware, upload.single('pdf'), async (req, 
       term,
       year,
       pdfUrl: req.file.path,
-      publicId: req.file.filename
+      publicId: req.file.filename,
+      originalName: req.file.originalname // Add this line
     });
     
     await result.save();
     res.json({ success: true, message: 'Result uploaded successfully', result });
   } catch (error) {
-    console.error("Upload Error Details:", error); // LOG ACTUAL ERROR
+    console.error("Upload Error Details:", error);
     
     if (error.code === 11000) {
       return res.status(400).json({ message: 'Result already exists for this student/class/term/year' });
     }
-    // Return the actual error message to help debug
     res.status(500).json({ success: false, message: error.message || 'Server error' });
   }
 });
@@ -253,24 +264,24 @@ app.put('/api/admin/results/:id', authMiddleware, upload.single('pdf'), async (r
   try {
     const { id } = req.params;
     const { admissionNumber, studentName, class: studentClass, term, year } = req.body;
-    
+
     const result = await Result.findById(id);
     if (!result) {
       return res.status(404).json({ message: 'Result not found' });
     }
-    
+
     if (req.file) {
       await cloudinary.uploader.destroy(result.publicId, { resource_type: 'raw' });
       result.pdfUrl = req.file.path;
       result.publicId = req.file.filename;
     }
-    
+
     result.admissionNumber = admissionNumber.toUpperCase();
     result.studentName = studentName;
     result.class = studentClass;
     result.term = term;
     result.year = year;
-    
+
     await result.save();
     res.json({ success: true, message: 'Result updated successfully', result });
   } catch (error) {
@@ -283,14 +294,14 @@ app.delete('/api/admin/results/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const result = await Result.findById(id);
-    
+
     if (!result) {
       return res.status(404).json({ message: 'Result not found' });
     }
-    
+
     await cloudinary.uploader.destroy(result.publicId, { resource_type: 'raw' });
     await Result.findByIdAndDelete(id);
-    
+
     res.json({ success: true, message: 'Result deleted successfully' });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error' });
