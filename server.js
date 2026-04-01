@@ -33,20 +33,10 @@ console.log("API Secret:", process.env.CLOUDINARY_API_SECRET ? "Found" : "❌ MI
 // Cloudinary Storage for PDFs
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: async (req, file) => {
-    // Generate a safe filename
-    const originalName = file.originalname.replace(/\.[^/.]+$/, ""); // Remove extension
-    const timestamp = Date.now();
-    return {
-      folder: 'jotlad-results',
-      allowed_formats: ['pdf'],
-      resource_type: 'raw',
-      // Attach the filename as metadata so we can use it later
-      public_id: `${originalName}_${timestamp}`,
-      // This flag tells Cloudinary to handle the extension correctly
-      use_filename: true,
-      unique_filename: false
-    };
+  params: {
+    folder: 'jotlad-results',
+    allowed_formats: ['pdf'],
+    resource_type: 'raw'
   }
 });
 
@@ -251,9 +241,10 @@ app.post('/api/admin/upload', authMiddleware, upload.single('pdf'), async (req, 
     res.json({ success: true, message: 'Result uploaded successfully', result });
   } catch (error) {
     console.error("Upload Error Details:", error);
-    
     if (error.code === 11000) {
-      return res.status(400).json({ message: 'Result already exists for this student/class/term/year' });
+      return res.status(400).json({ 
+        message: 'Result already exists for this student/class/term/year' 
+      });
     }
     res.status(500).json({ success: false, message: error.message || 'Server error' });
   }
