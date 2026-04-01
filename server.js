@@ -30,17 +30,13 @@ console.log("Cloud Name:", process.env.CLOUDINARY_CLOUD_NAME ? "Found" : "❌ MI
 console.log("API Key:", process.env.CLOUDINARY_API_KEY ? "Found" : "❌ MISSING");
 console.log("API Secret:", process.env.CLOUDINARY_API_SECRET ? "Found" : "❌ MISSING");
 
-// Cloudinary Storage for PDFs (Fixed for correct filenames)
+// Cloudinary Storage for PDFs
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: async (req, file) => {
-    return {
-      folder: 'jotlad-results',
-      allowed_formats: ['pdf'],
-      resource_type: 'raw',
-      // This forces the file to keep its original name with .pdf at the end
-      public_id: file.originalname.replace(/\.pdf$/i, "") 
-    };
+  params: {
+    folder: 'jotlad-results',
+    allowed_formats: ['pdf'],
+    resource_type: 'raw'
   }
 });
 
