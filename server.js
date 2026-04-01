@@ -36,11 +36,7 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage: storage });
 
-// ============ FIX 1: Correct Variable Name ============
-// Changed MONGODB_URI to MONGO_URI to match your .env file
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('✅ Connected to MongoDB Atlas'))
-  .catch(err => console.error('❌ MongoDB connection error:', err));
+// ============ SCHEMAS & MODELS (MOVED TO TOP) ============
 
 // Result Schema
 const resultSchema = new mongoose.Schema({
@@ -53,10 +49,7 @@ const resultSchema = new mongoose.Schema({
   publicId: { type: String, required: true },
   createdAt: { type: Date, default: Date.now }
 });
-
-// Compound index for unique result identification
 resultSchema.index({ admissionNumber: 1, class: 1, term: 1, year: 1 }, { unique: true });
-
 const Result = mongoose.model('Result', resultSchema);
 
 // Admin Schema
@@ -65,11 +58,36 @@ const adminSchema = new mongoose.Schema({
   password: { type: String, required: true },
   createdAt: { type: Date, default: Date.now }
 });
-
 const Admin = mongoose.model('Admin', adminSchema);
 
 // JWT Secret
 const JWT_SECRET = process.env.JWT_SECRET || 'jotlad-schools-secret-key-2024';
+
+// ============ DATABASE CONNECTION & AUTO ADMIN CREATION ============
+
+mongoose.connect(process.env.MONGO_URI)
+  .then(async () => {
+    console.log('✅ Connected to MongoDB Atlas');
+
+    // --- AUTO-CREATE ADMIN USER ---
+    // Check if any admin exists. If not, create the default one.
+    try {
+      const adminExists = await Admin.findOne({ username: 'admin' });
+      if (!adminExists) {
+        console.log('⚠️ No admin found. Creating default admin...');
+        const hashedPassword = await bcrypt.hash('admin123', 10);
+        await Admin.create({ username: 'admin', password: hashedPassword });
+        console.log('✅ Default Admin created successfully!');
+        console.log('👉 Username: admin');
+        console.log('👉 Password: admin123');
+      }
+    } catch (err) {
+      console.error('Error creating admin:', err);
+    }
+    // ------------------------------
+
+  })
+  .catch(err => console.error('❌ MongoDB connection error:', err));
 
 // Auth Middleware
 const authMiddleware = (req, res, next) => {
@@ -180,7 +198,7 @@ app.post('/api/admin/login', async (req, res) => {
   }
 });
 
-// Create initial admin (run once)
+// Create initial admin (manual backup)
 app.post('/api/admin/create', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -308,6 +326,10 @@ app.get('/api/admin/results/:id', authMiddleware, async (req, res) => {
 });
 
 // Serve static HTML pages
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'result-checker.html'));
+});
+
 app.get('/result-checker', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'result-checker.html'));
 });
@@ -320,7 +342,6 @@ app.get('/admin/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin-dashboard.html'));
 });
 
-// ============ FIX 2: Proper Server Start ============
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
