@@ -36,10 +36,11 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage: storage });
 
-// MongoDB Connection - Updated (No deprecated options)
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB Atlas'))
-  .catch(err => console.error('MongoDB connection error:', err));
+// ============ FIX 1: Correct Variable Name ============
+// Changed MONGODB_URI to MONGO_URI to match your .env file
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('✅ Connected to MongoDB Atlas'))
+  .catch(err => console.error('❌ MongoDB connection error:', err));
 
 // Result Schema
 const resultSchema = new mongoose.Schema({
@@ -319,7 +320,8 @@ app.get('/admin/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin-dashboard.html'));
 });
 
+// ============ FIX 2: Proper Server Start ============
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
