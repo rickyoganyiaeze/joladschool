@@ -72,97 +72,102 @@
         </div>
 
         <div class="upload-card">
-       <!-- UPLOAD FORM -->
-       <!-- FIX APPLIED: Added enctype="multipart/form-data" -->
-<form id="uploadForm" enctype="multipart/form-data">
-    
-    <div class="form-group">
-        <label for="admissionNumber">Admission Number</label>
-        <input type="text" id="admissionNumber" name="admissionNumber" required placeholder="e.g 2024001">
-    </div>
+          <!-- UPLOAD FORM -->
+          <!-- FIX APPLIED: Added enctype="multipart/form-data" -->
+          <form id="uploadForm" enctype="multipart/form-data">
 
-    <div class="form-group">
-        <label for="studentName">Student Name</label>
-        <input type="text" id="studentName" name="studentName" required>
-    </div>
-
-    <!-- RESTORED: Full Class List -->
-    <div class="form-group">
-        <label for="studentClass">Class</label>
-        <select id="studentClass" name="class" required>
-            <option value="">Select Class</option>
-            <optgroup label="Nursery">
-                <option value="Creche">Creche</option>
-                <option value="Playgroup">Playgroup</option>
-                <option value="Nursery 1">Nursery 1</option>
-                <option value="Nursery 2">Nursery 2</option>
-                <option value="Nursery 3">Nursery 3</option>
-            </optgroup>
-            <optgroup label="Primary">
-                <option value="Primary 1">Primary 1</option>
-                <option value="Primary 2">Primary 2</option>
-                <option value="Primary 3">Primary 3</option>
-                <option value="Primary 4">Primary 4</option>
-                <option value="Primary 5">Primary 5</option>
-                <option value="Primary 6">Primary 6</option>
-            </optgroup>
-            <optgroup label="Junior Secondary">
-                <option value="JSS 1">JSS 1</option>
-                <option value="JSS 2">JSS 2</option>
-                <option value="JSS 3">JSS 3</option>
-            </optgroup>
-            <optgroup label="Senior Secondary">
-                <option value="SS 1">SS 1</option>
-                <option value="SS 2">SS 2</option>
-                <option value="SS 3">SS 3</option>
-            </optgroup>
-        </select>
-    </div>
-
-    <div class="form-row">
-        <div class="form-group">
-            <label for="term">Term</label>
-            <select id="term" name="term" required>
-                <option value="">Select Term</option>
-                <option value="1st Term">1st Term</option>
-                <option value="2nd Term">2nd Term</option>
-                <option value="3rd Term">3rd Term</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label for="year">Year</label>
-            <input type="text" id="year" name="year" required placeholder="e.g 2024/2025">
-        </div>
-    </div>
-
-    <!-- FILE UPLOAD SECTION -->
-    <div class="form-group">
-        <label>Upload PDF Result</label>
-        <div class="file-upload-area" id="fileUpload">
-            
-            <!-- Default Upload Box -->
-            <div class="file-upload-content">
-                <i class="fas fa-cloud-upload-alt"></i>
-                <h3>Drag & Drop PDF here or <span>browse</span></h3>
-                <p>Max file size: 10MB</p>
-                <input type="file" id="pdfFile" name="pdf" accept=".pdf" required hidden>
+            <div class="form-group">
+              <label for="admissionNumber">Admission Number</label>
+              <input type="text" id="admissionNumber" name="admissionNumber" required placeholder="e.g 2024001">
             </div>
 
-            <!-- Display when file is selected -->
-            <div class="file-selected" style="display: none;">
-                <i class="fas fa-file-pdf"></i>
-                <span id="selectedFileName">filename.pdf</span>
-                <button type="button" id="removeFile"><i class="fas fa-times"></i></button>
+            <div class="form-group">
+              <label for="studentName">Student Name</label>
+              <input type="text" id="studentName" name="studentName" required>
             </div>
 
-        </div>
-    </div>
+            <!-- RESTORED: Full Class List -->
+            <div class="form-group">
+              <label for="studentClass">Class</label>
+              <select id="studentClass" name="class" required>
+                <option value="">Select Class</option>
+                <optgroup label="Nursery">
+                  <option value="Creche">Creche</option>
+                  <option value="Playgroup">Playgroup</option>
+                  <option value="Nursery 1">Nursery 1</option>
+                  <option value="Nursery 2">Nursery 2</option>
+                  <option value="Nursery 3">Nursery 3</option>
+                </optgroup>
+                <optgroup label="Primary">
+                  <option value="Primary 1">Primary 1</option>
+                  <option value="Primary 2">Primary 2</option>
+                  <option value="Primary 3">Primary 3</option>
+                  <option value="Primary 4">Primary 4</option>
+                  <option value="Primary 5">Primary 5</option>
+                  <option value="Primary 6">Primary 6</option>
+                </optgroup>
+                <optgroup label="Junior Secondary">
+                  <option value="JSS 1">JSS 1</option>
+                  <option value="JSS 2">JSS 2</option>
+                  <option value="JSS 3">JSS 3</option>
+                </optgroup>
+                <optgroup label="Senior Secondary">
+                  <option value="SS 1">SS 1</option>
+                  <option value="SS 2">SS 2</option>
+                  <option value="SS 3">SS 3</option>
+                </optgroup>
+              </select>
+            </div>
 
-    <button type="submit" class="btn btn-primary">
-        <i class="fas fa-upload"></i> Upload Result
-    </button>
-</form>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="term">Term</label>
+                <select id="term" name="term" required>
+                  <option value="">Select Term</option>
+                  <option value="1st Term">1st Term</option>
+                  <option value="2nd Term">2nd Term</option>
+                  <option value="3rd Term">3rd Term</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="year">Year</label>
+                <input type="text" id="year" name="year" required placeholder="e.g 2024/2025">
+              </div>
+            </div>
+
+            <!-- FILE UPLOAD SECTION -->
+            <!-- FILE UPLOAD SECTION -->
+            <div class="form-group">
+              <label>Upload PDF Result</label>
+              <div class="file-upload-area" id="fileUpload">
+
+                <!-- Default Upload Box -->
+                <!-- FIX: Added onclick to open file picker, and style="cursor:pointer" -->
+                <div class="file-upload-content" id="uploadArea" style="cursor: pointer;">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <h3>Drag & Drop PDF here or <span style="color: var(--primary); cursor: pointer;"
+                      id="browseLink">browse</span></h3>
+                  <p>Max file size: 10MB</p>
+                  <!-- The actual file input (hidden) -->
+                  <input type="file" id="pdfFile" name="pdf" accept=".pdf" required>
+                </div>
+
+                <!-- Display when file is selected -->
+                <div class="file-selected" style="display: none;">
+                  <i class="fas fa-file-pdf"></i>
+                  <span id="selectedFileName">filename.pdf</span>
+                  <button type="button" id="removeFile" class="btn btn-sm btn-outline"><i
+                      class="fas fa-times"></i></button>
+                </div>
+
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-upload"></i> Upload Result
+            </button>
+          </form>
         </div>
       </section>
 
@@ -206,75 +211,75 @@
       </div>
       <!-- EDIT FORM (Inside Modal) -->
       <!-- FIX APPLIED: Added enctype="multipart/form-data" -->
-<form id="editForm" enctype="multipart/form-data">
-    <input type="hidden" id="editId" name="id">
+      <form id="editForm" enctype="multipart/form-data">
+        <input type="hidden" id="editId" name="id">
 
-    <div class="form-group">
-        <label for="editAdmissionNumber">Admission Number</label>
-        <input type="text" id="editAdmissionNumber" name="admissionNumber" required>
-    </div>
+        <div class="form-group">
+          <label for="editAdmissionNumber">Admission Number</label>
+          <input type="text" id="editAdmissionNumber" name="admissionNumber" required>
+        </div>
 
-    <div class="form-group">
-        <label for="editStudentName">Student Name</label>
-        <input type="text" id="editStudentName" name="studentName" required>
-    </div>
+        <div class="form-group">
+          <label for="editStudentName">Student Name</label>
+          <input type="text" id="editStudentName" name="studentName" required>
+        </div>
 
-    <!-- RESTORED: Full Class List for Edit Modal -->
-    <div class="form-group">
-        <label for="editClass">Class</label>
-        <select id="editClass" name="class" required>
-             <optgroup label="Nursery">
-                <option value="Creche">Creche</option>
-                <option value="Playgroup">Playgroup</option>
-                <option value="Nursery 1">Nursery 1</option>
-                <option value="Nursery 2">Nursery 2</option>
-                <option value="Nursery 3">Nursery 3</option>
+        <!-- RESTORED: Full Class List for Edit Modal -->
+        <div class="form-group">
+          <label for="editClass">Class</label>
+          <select id="editClass" name="class" required>
+            <optgroup label="Nursery">
+              <option value="Creche">Creche</option>
+              <option value="Playgroup">Playgroup</option>
+              <option value="Nursery 1">Nursery 1</option>
+              <option value="Nursery 2">Nursery 2</option>
+              <option value="Nursery 3">Nursery 3</option>
             </optgroup>
             <optgroup label="Primary">
-                <option value="Primary 1">Primary 1</option>
-                <option value="Primary 2">Primary 2</option>
-                <option value="Primary 3">Primary 3</option>
-                <option value="Primary 4">Primary 4</option>
-                <option value="Primary 5">Primary 5</option>
-                <option value="Primary 6">Primary 6</option>
+              <option value="Primary 1">Primary 1</option>
+              <option value="Primary 2">Primary 2</option>
+              <option value="Primary 3">Primary 3</option>
+              <option value="Primary 4">Primary 4</option>
+              <option value="Primary 5">Primary 5</option>
+              <option value="Primary 6">Primary 6</option>
             </optgroup>
             <optgroup label="Junior Secondary">
-                <option value="JSS 1">JSS 1</option>
-                <option value="JSS 2">JSS 2</option>
-                <option value="JSS 3">JSS 3</option>
+              <option value="JSS 1">JSS 1</option>
+              <option value="JSS 2">JSS 2</option>
+              <option value="JSS 3">JSS 3</option>
             </optgroup>
             <optgroup label="Senior Secondary">
-                <option value="SS 1">SS 1</option>
-                <option value="SS 2">SS 2</option>
-                <option value="SS 3">SS 3</option>
+              <option value="SS 1">SS 1</option>
+              <option value="SS 2">SS 2</option>
+              <option value="SS 3">SS 3</option>
             </optgroup>
-        </select>
-    </div>
+          </select>
+        </div>
 
-     <div class="form-row">
-        <div class="form-group">
+        <div class="form-row">
+          <div class="form-group">
             <label for="editTerm">Term</label>
             <select id="editTerm" name="term" required>
-                <option value="1st Term">1st Term</option>
-                <option value="2nd Term">2nd Term</option>
-                <option value="3rd Term">3rd Term</option>
+              <option value="1st Term">1st Term</option>
+              <option value="2nd Term">2nd Term</option>
+              <option value="3rd Term">3rd Term</option>
             </select>
-        </div>
-        
-        <div class="form-group">
+          </div>
+
+          <div class="form-group">
             <label for="editYear">Year</label>
             <input type="text" id="editYear" name="year" required>
+          </div>
         </div>
-    </div>
 
-    <!-- EDIT FILE UPLOAD -->
-    <div class="form-group">
-        <label>Update PDF (Leave empty to keep current)</label>
-        <input type="file" id="editPdf" name="pdf" accept=".pdf">
-    </div>
+        <!-- EDIT FILE UPLOAD -->
+        <div class="form-group">
+          <label>Update PDF (Leave empty to keep current)</label>
+          <input type="file" id="editPdf" name="pdf" accept=".pdf">
+        </div>
 
-    <button type="submit" class="btn btn-success">Save Changes</button>
-</form>
+        <button type="submit" class="btn btn-success">Save Changes</button>
+      </form>
     </div>
   </div>
 
@@ -292,8 +297,24 @@
       </div>
     </div>
   </div>
+<script>
+  // Fix for file upload click
+  const uploadArea = document.getElementById('uploadArea');
+  const pdfFileInput = document.getElementById('pdfFile');
+  const browseLink = document.getElementById('browseLink');
 
-  <script src="admin-dashboard.js"></script>
+  if(uploadArea && pdfFileInput) {
+      // Open file picker when clicking the box
+      uploadArea.addEventListener('click', (e) => {
+          // Prevent click if clicking the remove button (doesn't exist here but good practice)
+          if(e.target.id !== 'removeFile') {
+              pdfFileInput.click();
+          }
+      });
+  }
+</script>
+
+<script src="admin-dashboard.js"></script>
 </body>
 
 </html>
