@@ -1,47 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - Jotlad Schools</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login | Jotlad Group of Schools</title>
+  <meta name="robots" content="noindex, nofollow">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <base href="/">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Poppins:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="result-portal.css">
 </head>
-<body class="bg-light d-flex align-items-center justify-content-center" style="height: 100vh;">
-    <div class="card p-4 shadow" style="width: 400px;">
-        <h3 class="text-center mb-3">Admin Login</h3>
-        <div id="errorMsg" class="alert alert-danger d-none"></div>
-        <input type="text" id="username" class="form-control mb-2" placeholder="Username">
-        <input type="password" id="password" class="form-control mb-3" placeholder="Password">
-        <button onclick="login()" class="btn btn-primary w-100">Login</button>
+
+<body class="admin-body">
+  <div class="admin-login-container">
+    <div class="admin-login-card">
+      <div class="admin-logo">
+        <img src="images/basicschoollogo.png" alt="Jotlad Basic Logo">
+        <img src="images/collegeschoollogo.png" alt="Jotlad College Logo">
+      </div>
+      <div class="admin-logo">
+        <h2>Jotlad Group of Schools</h2>
+      </div>
+      <div class="admin-logo">
+        <p>Admin Portal</p>
+      </div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <div class="input-icon">
+            <i class="fas fa-user"></i>
+            <input type="text" id="username" name="username" placeholder="Enter username" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-icon">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="password" name="password" placeholder="Enter password" required>
+            <button type="button" class="toggle-password" id="togglePassword">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="error-message" id="loginError" style="display: none;"></div>
+
+        <button type="submit" class="btn btn-Basic btn-lg btn-block">
+          <span>Login</span>
+          <i class="fas fa-sign-in-alt"></i>
+        </button>
+      </form>
+
+      <div class="admin-footer">
+        <a href="index.html"><i class="fas fa-arrow-left"></i> Back to Website</a>
+      </div>
     </div>
+  </div>
 
-    <script>
-        async function login() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorMsg = document.getElementById('errorMsg');
+  <script>
+    const API_URL = window.location.origin + '/api';
 
-            try {
-                const res = await fetch('/api/admin/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                });
+    // Toggle password visibility
+    document.getElementById('togglePassword').addEventListener('click', function () {
+      const password = document.getElementById('password');
+      const icon = this.querySelector('i');
+      if (password.type === 'password') {
+        password.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+      } else {
+        password.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+      }
+    });
 
-                const data = await res.json();
+    // Login form
+    document.getElementById('loginForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
 
-                if (data.success) {
-                    localStorage.setItem('token', data.token);
-                    window.location.href = '/admin/dashboard';
-                } else {
-                    errorMsg.textContent = data.message;
-                    errorMsg.classList.remove('d-none');
-                }
-            } catch (err) {
-                errorMsg.textContent = 'Connection error';
-                errorMsg.classList.remove('d-none');
-            }
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorDiv = document.getElementById('loginError');
+
+      try {
+        const response = await fetch(`${API_URL}/admin/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          localStorage.setItem('adminToken', data.token);
+          localStorage.setItem('adminUsername', data.username);
+          window.location.href = '/admin/dashboard';
+        } else {
+          errorDiv.textContent = data.message || 'Login failed';
+          errorDiv.style.display = 'block';
         }
-    </script>
+      } catch (error) {
+        errorDiv.textContent = 'Connection error. Please try again.';
+        errorDiv.style.display = 'block';
+      }
+    });
+  </script>
 </body>
+
 </html>
