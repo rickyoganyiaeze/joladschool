@@ -286,13 +286,7 @@ app.get('/api/admin/results/:id', authMiddleware, async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
-// Ping the app every 5 minutes to prevent sleeping
-setInterval(() => {
-  http.get(`http://localhost:${PORT}`, (res) => {
-    console.log('Keeping awake...');
-  });
-}, 300000); // 5 minutes
-//
+
 
 // Serve HTML Pages
 app.get('/result-checker', (req, res) => res.sendFile(path.join(__dirname, 'public', 'result-checker.html')));
