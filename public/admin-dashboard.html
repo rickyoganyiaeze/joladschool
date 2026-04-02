@@ -73,7 +73,7 @@
 
         <div class="upload-card">
        <!-- UPLOAD FORM -->
-<!-- IMPORTANT: enctype="multipart/form-data" is REQUIRED for file uploads -->
+       <!-- FIX APPLIED: Added enctype="multipart/form-data" -->
 <form id="uploadForm" enctype="multipart/form-data">
     
     <div class="form-group">
@@ -86,13 +86,36 @@
         <input type="text" id="studentName" name="studentName" required>
     </div>
 
-    <!-- Add your Class, Term, Year Selects here if not already present -->
+    <!-- RESTORED: Full Class List -->
     <div class="form-group">
         <label for="studentClass">Class</label>
         <select id="studentClass" name="class" required>
             <option value="">Select Class</option>
-            <option value="JSS 1">JSS 1</option>
-            <!-- Add other classes -->
+            <optgroup label="Nursery">
+                <option value="Creche">Creche</option>
+                <option value="Playgroup">Playgroup</option>
+                <option value="Nursery 1">Nursery 1</option>
+                <option value="Nursery 2">Nursery 2</option>
+                <option value="Nursery 3">Nursery 3</option>
+            </optgroup>
+            <optgroup label="Primary">
+                <option value="Primary 1">Primary 1</option>
+                <option value="Primary 2">Primary 2</option>
+                <option value="Primary 3">Primary 3</option>
+                <option value="Primary 4">Primary 4</option>
+                <option value="Primary 5">Primary 5</option>
+                <option value="Primary 6">Primary 6</option>
+            </optgroup>
+            <optgroup label="Junior Secondary">
+                <option value="JSS 1">JSS 1</option>
+                <option value="JSS 2">JSS 2</option>
+                <option value="JSS 3">JSS 3</option>
+            </optgroup>
+            <optgroup label="Senior Secondary">
+                <option value="SS 1">SS 1</option>
+                <option value="SS 2">SS 2</option>
+                <option value="SS 3">SS 3</option>
+            </optgroup>
         </select>
     </div>
 
@@ -182,6 +205,7 @@
         <button class="modal-close" id="closeEditModal">&times;</button>
       </div>
       <!-- EDIT FORM (Inside Modal) -->
+      <!-- FIX APPLIED: Added enctype="multipart/form-data" -->
 <form id="editForm" enctype="multipart/form-data">
     <input type="hidden" id="editId" name="id">
 
@@ -195,9 +219,36 @@
         <input type="text" id="editStudentName" name="studentName" required>
     </div>
 
+    <!-- RESTORED: Full Class List for Edit Modal -->
     <div class="form-group">
         <label for="editClass">Class</label>
-        <select id="editClass" name="class" required></select> <!-- JS populates this -->
+        <select id="editClass" name="class" required>
+             <optgroup label="Nursery">
+                <option value="Creche">Creche</option>
+                <option value="Playgroup">Playgroup</option>
+                <option value="Nursery 1">Nursery 1</option>
+                <option value="Nursery 2">Nursery 2</option>
+                <option value="Nursery 3">Nursery 3</option>
+            </optgroup>
+            <optgroup label="Primary">
+                <option value="Primary 1">Primary 1</option>
+                <option value="Primary 2">Primary 2</option>
+                <option value="Primary 3">Primary 3</option>
+                <option value="Primary 4">Primary 4</option>
+                <option value="Primary 5">Primary 5</option>
+                <option value="Primary 6">Primary 6</option>
+            </optgroup>
+            <optgroup label="Junior Secondary">
+                <option value="JSS 1">JSS 1</option>
+                <option value="JSS 2">JSS 2</option>
+                <option value="JSS 3">JSS 3</option>
+            </optgroup>
+            <optgroup label="Senior Secondary">
+                <option value="SS 1">SS 1</option>
+                <option value="SS 2">SS 2</option>
+                <option value="SS 3">SS 3</option>
+            </optgroup>
+        </select>
     </div>
 
      <div class="form-row">
