@@ -72,99 +72,74 @@
         </div>
 
         <div class="upload-card">
-          <form id="uploadForm" enctype="multipart/form-data">
-            <div class="form-row">
-              <div class="form-group">
-                <label for="admissionNumber">Admission Number *</label>
-                <input type="text" id="admissionNumber" name="admissionNumber" placeholder="e.g., JTC/2024/001"
-                  required>
-              </div>
-              <div class="form-group">
-                <label for="studentName">Student Name *</label>
-                <input type="text" id="studentName" name="studentName" placeholder="Full name as in result" required>
-              </div>
+       <!-- UPLOAD FORM -->
+<!-- IMPORTANT: enctype="multipart/form-data" is REQUIRED for file uploads -->
+<form id="uploadForm" enctype="multipart/form-data">
+    
+    <div class="form-group">
+        <label for="admissionNumber">Admission Number</label>
+        <input type="text" id="admissionNumber" name="admissionNumber" required placeholder="e.g 2024001">
+    </div>
+
+    <div class="form-group">
+        <label for="studentName">Student Name</label>
+        <input type="text" id="studentName" name="studentName" required>
+    </div>
+
+    <!-- Add your Class, Term, Year Selects here if not already present -->
+    <div class="form-group">
+        <label for="studentClass">Class</label>
+        <select id="studentClass" name="class" required>
+            <option value="">Select Class</option>
+            <option value="JSS 1">JSS 1</option>
+            <!-- Add other classes -->
+        </select>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label for="term">Term</label>
+            <select id="term" name="term" required>
+                <option value="">Select Term</option>
+                <option value="1st Term">1st Term</option>
+                <option value="2nd Term">2nd Term</option>
+                <option value="3rd Term">3rd Term</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="year">Year</label>
+            <input type="text" id="year" name="year" required placeholder="e.g 2024/2025">
+        </div>
+    </div>
+
+    <!-- FILE UPLOAD SECTION -->
+    <div class="form-group">
+        <label>Upload PDF Result</label>
+        <div class="file-upload-area" id="fileUpload">
+            
+            <!-- Default Upload Box -->
+            <div class="file-upload-content">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <h3>Drag & Drop PDF here or <span>browse</span></h3>
+                <p>Max file size: 10MB</p>
+                <input type="file" id="pdfFile" name="pdf" accept=".pdf" required hidden>
             </div>
 
-            <div class="form-row">
-              <div class="form-group">
-                <label for="classSelect">Class *</label>
-                <select id="classSelect" name="class" required>
-                  <option value="">Select Class</option>
-                  <optgroup label="Nursery">
-                    <option value="Creche">Creche</option>
-                    <option value="Playgroup">Playgroup</option>
-                    <option value="Nursery 1">Nursery 1</option>
-                    <option value="Nursery 2">Nursery 2</option>
-                    <option value="Nursery 3">Nursery 3</option>
-                  </optgroup>
-                  <optgroup label="Primary">
-                    <option value="Primary 1">Primary 1</option>
-                    <option value="Primary 2">Primary 2</option>
-                    <option value="Primary 3">Primary 3</option>
-                    <option value="Primary 4">Primary 4</option>
-                    <option value="Primary 5">Primary 5</option>
-                    <option value="Primary 6">Primary 6</option>
-                  </optgroup>
-                  <optgroup label="Junior Secondary">
-                    <option value="JSS 1">JSS 1</option>
-                    <option value="JSS 2">JSS 2</option>
-                    <option value="JSS 3">JSS 3</option>
-                  </optgroup>
-                  <optgroup label="Senior Secondary">
-                    <option value="SS 1">SS 1</option>
-                    <option value="SS 2">SS 2</option>
-                    <option value="SS 3">SS 3</option>
-                  </optgroup>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="termSelect">Term *</label>
-                <select id="termSelect" name="term" required>
-                  <option value="">Select Term</option>
-                  <option value="First Term">First Term</option>
-                  <option value="Second Term">Second Term</option>
-                  <option value="Third Term">Third Term</option>
-                </select>
-              </div>
+            <!-- Display when file is selected -->
+            <div class="file-selected" style="display: none;">
+                <i class="fas fa-file-pdf"></i>
+                <span id="selectedFileName">filename.pdf</span>
+                <button type="button" id="removeFile"><i class="fas fa-times"></i></button>
             </div>
 
-            <div class="form-group">
-              <label for="yearSelect">Academic Year *</label>
-              <select id="yearSelect" name="year" required>
-                <option value="">Select Year</option>
-                <option value="2023/2024">2023/2024</option>
-                <option value="2024/2025">2024/2025</option>
-                <option value="2025/2026">2025/2026</option>
-                <option value="2026/2027">2026/2027</option>
-              </select>
-            </div>
+        </div>
+    </div>
 
-            <div class="form-group">
-              <label for="pdfFile">Result PDF *</label>
-              <div class="file-upload" id="fileUpload">
-               <input type="file" id="pdfFile" accept=".pdf" class="form-control mb-3">
-                <div class="file-upload-content">
-                  <i class="fas fa-cloud-upload-alt"></i>
-                  <p>Drag & drop PDF here or <span>browse</span></p>
-                  <small>Max file size: 10MB</small>
-                </div>
-                <div class="file-selected" style="display: none;">
-                  <i class="fas fa-file-pdf"></i>
-                  <span id="selectedFileName"></span>
-                  <button type="button" class="remove-file" id="removeFile">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div class="form-actions">
-              <button type="reset" class="btn btn-outline">Clear Form</button>
-              <button type="submit" class="btn btn-Basic">
-                <i class="fas fa-upload"></i> Upload Result
-              </button>
-            </div>
-          </form>
+    <button type="submit" class="btn btn-primary">
+        <i class="fas fa-upload"></i> Upload Result
+    </button>
+</form>
         </div>
       </section>
 
@@ -206,50 +181,49 @@
         <h3>Edit Result</h3>
         <button class="modal-close" id="closeEditModal">&times;</button>
       </div>
-      <form id="editForm">
-        <input type="hidden" id="editId">
-        <div class="form-row">
-          <div class="form-group">
-            <label>Admission Number</label>
-            <input type="text" id="editAdmissionNumber" required>
-          </div>
-          <div class="form-group">
-            <label>Student Name</label>
-            <input type="text" id="editStudentName" required>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Class</label>
-            <select id="editClass" required></select>
-          </div>
-          <div class="form-group">
-            <label>Term</label>
-            <select id="editTerm" required>
-              <option value="First Term">First Term</option>
-              <option value="Second Term">Second Term</option>
-              <option value="Third Term">Third Term</option>
+      <!-- EDIT FORM (Inside Modal) -->
+<form id="editForm" enctype="multipart/form-data">
+    <input type="hidden" id="editId" name="id">
+
+    <div class="form-group">
+        <label for="editAdmissionNumber">Admission Number</label>
+        <input type="text" id="editAdmissionNumber" name="admissionNumber" required>
+    </div>
+
+    <div class="form-group">
+        <label for="editStudentName">Student Name</label>
+        <input type="text" id="editStudentName" name="studentName" required>
+    </div>
+
+    <div class="form-group">
+        <label for="editClass">Class</label>
+        <select id="editClass" name="class" required></select> <!-- JS populates this -->
+    </div>
+
+     <div class="form-row">
+        <div class="form-group">
+            <label for="editTerm">Term</label>
+            <select id="editTerm" name="term" required>
+                <option value="1st Term">1st Term</option>
+                <option value="2nd Term">2nd Term</option>
+                <option value="3rd Term">3rd Term</option>
             </select>
-          </div>
         </div>
+        
         <div class="form-group">
-          <label>Year</label>
-          <select id="editYear" required>
-            <option value="2023/2024">2023/2024</option>
-            <option value="2024/2025">2024/2025</option>
-            <option value="2025/2026">2025/2026</option>
-            <option value="2026/2027">2026/2027</option>
-          </select>
+            <label for="editYear">Year</label>
+            <input type="text" id="editYear" name="year" required>
         </div>
-        <div class="form-group">
-          <label>Replace PDF (Optional)</label>
-          <input type="file" id="editPdf" accept=".pdf">
-        </div>
-        <div class="form-actions">
-          <button type="button" class="btn btn-outline" id="cancelEdit">Cancel</button>
-          <button type="submit" class="btn btn-Basic">Save Changes</button>
-        </div>
-      </form>
+    </div>
+
+    <!-- EDIT FILE UPLOAD -->
+    <div class="form-group">
+        <label>Update PDF (Leave empty to keep current)</label>
+        <input type="file" id="editPdf" name="pdf" accept=".pdf">
+    </div>
+
+    <button type="submit" class="btn btn-success">Save Changes</button>
+</form>
     </div>
   </div>
 

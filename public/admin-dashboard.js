@@ -260,7 +260,7 @@ document.getElementById('editForm').addEventListener('submit', async (e) => {
   
   const pdfFile = document.getElementById('editPdf').files[0];
   if (pdfFile) {
-    formData.append('pdf', document.getElementById('pdfFile').files[0]);
+    formData.append('pdf', pdfFile);
   }
   
   try {
