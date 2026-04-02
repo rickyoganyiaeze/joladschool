@@ -294,3 +294,8 @@ app.get('/admin/dashboard', (req, res) => res.sendFile(path.join(__dirname, 'pub
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
+// Keep the process alive explicitly
+setInterval(() => {
+  // This dummy interval prevents Railway from sleeping the process unexpectedly
+}, 1000 * 60 * 5); 
