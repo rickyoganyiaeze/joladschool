@@ -1,3 +1,11 @@
+// --- RAILWAY KEEP ALIVE ---
+const http = require('http');
+const setIntervalId = setInterval(() => {
+  // We define a dummy request to self to keep the container alive
+  const req = http.get(`http://localhost:${process.env.PORT || 3000}`, () => {});
+  req.on('error', () => {}); // Ignore errors if not ready yet
+}, 600000); // 10 Minutes
+// -------------------------
 const express = require('express');
 const mongoose = require('mongoose');
 const multer = require('multer'); // We still use multer to catch the file, but we won't save it to disk
