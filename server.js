@@ -286,14 +286,31 @@ app.get('/api/admin/results/:id', authMiddleware, async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
+// Ping the app every 5 minutes to prevent sleeping
+setInterval(() => {
+  http.get(`http://localhost:${PORT}`, (res) => {
+    console.log('Keeping awake...');
+  });
+}, 300000); // 5 minutes
+//
 
+// Serve static HTML pages
+app.get('/result-checker', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'result-checker.html'));
+});
 
-// Serve HTML Pages
-app.get('/result-checker', (req, res) => res.sendFile(path.join(__dirname, 'public', 'result-checker.html')));
-app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
-app.get('/admin/dashboard', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin-dashboard.html')));
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
 
+app.get('/admin/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin-dashboard.html'));
+});
+
+// ============ FIX 2: Proper Server Start ============
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
+
+
