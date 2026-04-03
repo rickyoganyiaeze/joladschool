@@ -13,7 +13,8 @@ app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 
 // --- DB CONNECTION ---
-const MONGO_URI = process.env.MONGO_URI;
+// TEMPORARY HARDCODE - REMOVE LATER FOR SECURITY
+const MONGO_URI = "mongodb+srv://joladschool_admin:Jotlad2024Secure@joladschool.uludk18.mongodb.net/?appName=joladschool";
 if (!MONGO_URI) {
     console.error("ERROR: MONGO_URI is missing!");
 }
