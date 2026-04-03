@@ -1,3 +1,4 @@
+// --- IMPORTS ---
 const express = require('express');
 const mongoose = require('mongoose');
 const multer = require('multer');
@@ -5,21 +6,20 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+// --- APP SETUP ---
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '25mb' }));
-app.use(express.urlencoded({ limit: '25mb', extended: true }));
+app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 
-// --- DATABASE CONNECTION ---
-const connectDB = async () => {
-  if (mongoose.connection.readyState === 0) {
-    try {
-      await mongoose.connect(process.env.MONGO_URI);
-      console.log('✅ DB Connected');
-    } catch (err) { console.error(err); }
-  }
-};
-connectDB();
+// --- DB CONNECTION ---
+const MONGO_URI = process.env.MONGO_URI;
+if (!MONGO_URI) {
+    console.error("ERROR: MONGO_URI is missing in Environment Variables!");
+}
+mongoose.connect(MONGO_URI || '')
+  .then(() => console.log('✅ DB Connected'))
+  .catch(err => console.error('❌ DB Connection Error:', err));
 
 // --- SCHEMAS ---
 const ResultSchema = new mongoose.Schema({
@@ -34,11 +34,10 @@ const AdminSchema = new mongoose.Schema({
 });
 const Admin = mongoose.model('Admin', AdminSchema);
 
-const JWT_SECRET = process.env.JWT_SECRET || 'secret-2024';
+const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
 
-// --- MIDDLEWARE ---
+// --- HELPERS ---
 const authMiddleware = async (req, res, next) => {
-  await connectDB();
   const token = req.header('Authorization')?.replace('Bearer ', '');
   if (!token) return res.status(401).json({ message: 'No token' });
   try {
@@ -46,74 +45,59 @@ const authMiddleware = async (req, res, next) => {
     next();
   } catch (e) { res.status(400).json({ message: 'Bad token' }); }
 };
-
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
 // --- ROUTES ---
 
-// 1. Test
-app.get('/hello', (req, res) => res.json({ msg: 'API Active' }));
+// Test
+app.get('/hello', (req, res) => res.json({ msg: 'Active' }));
 
-// 2. Check Admission
+// Check Admission
 app.post('/check-admission', async (req, res) => {
-  await connectDB();
   try {
     const r = await Result.find({ admissionNumber: req.body.admissionNumber?.toUpperCase() }).select('class term year studentName');
     res.json(r.length ? { success: true, studentName: r[0].studentName, results: r } : { success: false, message: 'Invalid' });
   } catch(e) { res.status(500).json({success:false}); }
 });
 
-// 3. Get Result (Returns Base64 PDF)
+// Get Result
 app.post('/get-result', async (req, res) => {
-  await connectDB();
   try {
     const r = await Result.findOne({ admissionNumber: req.body.admissionNumber?.toUpperCase(), class: req.body.class, term: req.body.term, year: req.body.year });
     res.json(r ? { success: true, result: r } : { success: false, message: 'Not found' });
   } catch(e) { res.status(500).json({success:false}); }
 });
 
-// 4. Admin Login (DEBUG MODE)
+// Admin Login
 app.post('/admin/login', async (req, res) => {
-  // Force connection check
-  if (mongoose.connection.readyState !== 1) {
-     return res.status(500).json({ message: 'Database not connected' });
-  }
-  
   try {
-    console.log("Login attempt for:", req.body.username); // Log username
+    // Basic check for body existence
+    if(!req.body.username || !req.body.password) return res.status(400).send('Missing credentials');
+
     const a = await Admin.findOne({ username: req.body.username });
     
-    if (!a) {
-       console.log("User not found");
-       return res.status(400).json({ message: 'User not found' }); // Be specific
-    }
-
+    if (!a) return res.status(400).json({ message: 'User not found' });
+    
     const valid = await bcrypt.compare(req.body.password, a.password);
-    if (!valid) {
-       console.log("Wrong password");
-       return res.status(400).json({ message: 'Wrong password' });
-    }
+    if (!valid) return res.status(400).json({ message: 'Invalid Password' });
 
     const token = jwt.sign({ id: a._id }, JWT_SECRET, { expiresIn: '24h' });
-    console.log("Success!");
     res.json({ success: true, token, username: a.username });
 
   } catch(e) { 
-    console.error("LOGIN ERROR:", e); // Log the actual error
-    res.status(500).json({ success: false, message: e.message }); 
+    console.error("LOGIN ERROR:", e); 
+    res.status(500).json({ message: e.message }); 
   }
 });
 
-// 5. Upload Result
+// Upload
 app.post('/admin/upload', authMiddleware, upload.single('pdf'), async (req, res) => {
-  await connectDB();
   try {
     if (!req.file) return res.status(400).send('PDF required');
-    
     const result = new Result({
       admissionNumber: req.body.admissionNumber?.toUpperCase(),
-      studentName: req.body.studentName,
-      class: req.body.class, term: req.body.term, year: req.body.year,
+      studentName: req.body.studentName, class: req.body.class, 
+      term: req.body.term, year: req.body.year,
       pdfData: req.file.buffer.toString('base64')
     });
     await result.save();
@@ -124,30 +108,25 @@ app.post('/admin/upload', authMiddleware, upload.single('pdf'), async (req, res)
   }
 });
 
-// 6. Get All Results
+// Get All Results
 app.get('/admin/results', authMiddleware, async (req, res) => {
-  await connectDB();
   res.json({ success: true, results: await Result.find().sort({createdAt:-1}) });
 });
 
-// 7. Delete Result
+// Delete
 app.delete('/admin/results/:id', authMiddleware, async (req, res) => {
-  await connectDB();
   await Result.findByIdAndDelete(req.params.id);
   res.json({ success: true });
 });
 
-// 8. Update Result
+// Update
 app.put('/admin/results/:id', authMiddleware, upload.single('pdf'), async (req, res) => {
-  await connectDB();
   try {
     const result = await Result.findById(req.params.id);
     if(!result) return res.status(404).send('Not found');
     if(req.file) result.pdfData = req.file.buffer.toString('base64');
-    
     Object.assign(result, {
-      admissionNumber: req.body.admissionNumber?.toUpperCase(),
-      studentName: req.body.studentName,
+      admissionNumber: req.body.admissionNumber?.toUpperCase(), studentName: req.body.studentName,
       class: req.body.class, term: req.body.term, year: req.body.year
     });
     await result.save();
@@ -155,4 +134,5 @@ app.put('/admin/results/:id', authMiddleware, upload.single('pdf'), async (req, 
   } catch(e) { res.status(500).json({success:false}); }
 });
 
-export default app;
+// EXPORT
+module.exports = app;
