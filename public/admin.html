@@ -6,14 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | jolad Schools</title>
     <base href="/">
-    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="icon" type="image/png" href="images/favicon.jpeg">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
     <style>
         .admin-container { display: flex; min-height: 100vh; }
-        
-        /* Desktop Sidebar */
         .sidebar { width: 260px; background: linear-gradient(135deg, var(--Primary-blue) 0%, var(--Primary-blue-dark) 100%); color: white; padding: 2rem; flex-shrink: 0; }
         .sidebar h2 { font-size: 1.5rem; margin-bottom: 2rem; border-bottom: 1px solid rgb(255, 255, 255); padding-bottom: 1rem; }
         .sidebar ul { list-style: none; padding: 0; }
@@ -21,13 +19,10 @@
         .sidebar a { color: rgba(255, 255, 255, 0.8); text-decoration: none; font-weight: 600; display: block; padding: 0.75rem; border-radius: 8px; transition: 0.3s; }
         .sidebar a:hover, .sidebar a.active { background: rgba(255, 255, 255, 0.1); color: white; }
 
-        /* Mobile Top Header */
         .mobile-header { display: none; background: white; padding: 1rem 1.5rem; box-shadow: var(--shadow-sm); position: sticky; top: 0; z-index: 100; }
         .mobile-header-content { display: flex; justify-content: space-between; align-items: center; }
         .mobile-header h2 { color: var(--Primary-blue); font-size: 1.25rem; margin: 0; }
-        .hamburger { background: none; border: none; font-size: 1.5rem; color: var(--text-dark); cursor: pointer; padding: 5px; }
-
-        /* Mobile Dropdown Menu */
+        .hamburger { background: none; border: none; font-size: 1.5rem; color: var(--text-dark); cursor: pointer; }
         .mobile-menu { display: none; background: white; padding: 1rem 1.5rem; box-shadow: var(--shadow-sm); border-top: 1px solid var(--light-gray); }
         .mobile-menu.active { display: block; }
         .mobile-menu ul { list-style: none; padding: 0; margin: 0; }
@@ -41,7 +36,10 @@
         .card { background: white; border-radius: var(--border-radius-lg); padding: 2rem; box-shadow: var(--shadow-sm); margin-bottom: 2rem; }
         .card h3 { margin-bottom: 1.5rem; color: var(--Primary-blue); border-bottom: 2px solid var(--off-white); padding-bottom: 0.5rem; }
         
-        /* Table Styles */
+        /* Filter Bar */
+        .filter-bar { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .filter-bar input, .filter-bar select { flex: 1; min-width: 200px; padding: 0.75rem; border: 2px solid var(--light-gray); border-radius: 8px; font-family: inherit; }
+
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--light-gray); }
         th { background: var(--off-white); font-weight: 700; color: var(--text-dark); }
@@ -50,30 +48,21 @@
         .btn-edit { color: var(--Primary-blue); } .btn-edit:hover { background: rgba(0, 86, 179, 0.1); }
         .btn-delete { color: #dc3545; } .btn-delete:hover { background: rgba(220, 53, 69, 0.1); }
 
-        /* Mobile Responsive Table Magic */
         @media (max-width: 768px) {
             .sidebar { display: none; }
             .mobile-header { display: block; }
             .main-content { padding: 1rem; }
+            .filter-bar { flex-direction: column; }
+            .filter-bar input, .filter-bar select { min-width: 100%; }
             
             table thead { display: none; }
-            table tr { 
-                display: block; margin-bottom: 1.5rem; background: white; border: 1px solid var(--light-gray);
-                border-radius: 12px; padding: 1rem; box-shadow: var(--shadow-sm); position: relative;
-            }
-            table td { 
-                display: flex; justify-content: space-between; align-items: center;
-                padding: 0.75rem 0; border-bottom: 1px solid #f8f8f8; text-align: right; font-size: 0.95rem;
-            }
+            table tr { display: block; margin-bottom: 1.5rem; background: white; border: 1px solid var(--light-gray); border-radius: 12px; padding: 1rem; box-shadow: var(--shadow-sm); }
+            table td { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #f8f8f8; text-align: right; font-size: 0.95rem; }
             table td:last-child { border-bottom: none; justify-content: flex-end; padding-top: 1rem; gap: 0.5rem; }
-            table td::before { 
-                content: attr(data-label); font-weight: 700; text-align: left;
-                padding-right: 1rem; color: var(--text-dark); font-size: 0.85rem; flex-shrink: 0;
-            }
+            table td::before { content: attr(data-label); font-weight: 700; text-align: left; padding-right: 1rem; color: var(--text-dark); font-size: 0.85rem; flex-shrink: 0; }
             table td:last-child::before { content: ''; }
         }
 
-        /* Modal Styles */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center; z-index: 9999; padding: 1rem; }
         .modal-overlay.active { display: flex; }
         .modal-box { background: white; border-radius: var(--border-radius-lg); padding: 2rem; width: 100%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; max-height: 90vh; overflow-y: auto; }
@@ -89,43 +78,38 @@
 <body>
 
     <div class="admin-container">
-        <!-- Desktop Sidebar -->
         <aside class="sidebar">
             <h2 style="color: white;">jolad Admin</h2>
             <ul>
                 <li><a href="index.html"><i class="fas fa-globe"></i> View Website</a></li>
                 <li><a href="#" class="active" id="navUploadDesk"><i class="fas fa-upload"></i> Upload Result</a></li>
                 <li><a href="#" id="navResultsDesk"><i class="fas fa-list"></i> All Results</a></li>
-                <li><a href="#" onclick="alert('Logout functionality not needed for single admin key.')"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                <li><a href="#" onclick="alert('Logged out.'); sessionStorage.clear(); window.location.href='/login.html';"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
             </ul>
         </aside>
 
         <div style="flex: 1; display: flex; flex-direction: column;">
-            <!-- Mobile Header with Hamburger -->
             <div class="mobile-header">
                 <div class="mobile-header-content">
                     <h2><i class="fas fa-user-shield"></i> jolad Admin</h2>
                     <button class="hamburger" id="hamburgerBtn"><i class="fas fa-bars"></i></button>
                 </div>
             </div>
-
-            <!-- Mobile Dropdown Menu -->
             <div class="mobile-menu" id="mobileMenu">
                 <ul>
                     <li><a href="index.html"><i class="fas fa-globe"></i> View Website</a></li>
                     <li><a href="#" class="active" id="navUploadMob"><i class="fas fa-upload"></i> Upload Result</a></li>
                     <li><a href="#" id="navResultsMob"><i class="fas fa-list"></i> All Results</a></li>
-                    <li><a href="#" onclick="alert('Logout functionality not needed for single admin key.')"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                    <li><a href="#" onclick="alert('Logged out.'); sessionStorage.clear(); window.location.href='/login.html';"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
                 </ul>
             </div>
 
-            <!-- Main Content Area -->
             <main class="main-content">
                 <!-- Upload Section -->
                 <div id="uploadSection">
                     <div class="page-title">
                         <h1 style="color: #ff6600;">Dashboard</h1>
-                        <p>Manage student results and uploads.</p>
+                        <p>Upload a new student result.</p>
                     </div>
                     <div class="card">
                         <h3><i class="fas fa-plus-circle"></i> Upload New Result</h3>
@@ -140,52 +124,74 @@
                                     <input type="text" id="sName" class="form-control" placeholder="Full Name" required>
                                 </div>
                             </div>
-                            <div class="form-row">
+                            <div class="form-row" style="grid-template-columns: 1fr 1fr 1fr;">
                                 <div class="form-group">
                                     <label>Class</label>
-                                    <input type="text" id="sClass" class="form-control" placeholder="e.g. JSS 1" required>
+                                    <select id="sClass" class="form-control" required>
+                                        <option value="">Select Class</option>
+                                        <option>Creche</option><option>Playgroup</option><option>Nursery 1</option><option>Nursery 2</option>
+                                        <option>Primary 1</option><option>Primary 2</option><option>Primary 3</option><option>Primary 4</option><option>Primary 5</option><option>Primary 6</option>
+                                        <option>JSS 1</option><option>JSS 2</option><option>JSS 3</option>
+                                        <option>SSS 1</option><option>SSS 2</option><option>SSS 3</option>
+                                    </select>
                                 </div>
+                                <div class="form-group">
+                                    <label>Term</label>
+                                    <select id="sTerm" class="form-control" required>
+                                        <option value="">Select Term</option>
+                                        <option>First Term</option><option>Second Term</option><option>Third Term</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Academic Year</label>
+                                    <select id="sYear" class="form-control" required>
+                                        <option value="">Select Year</option>
+                                        <option>2023/2024</option><option>2024/2025</option><option>2025/2026</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
                                 <div class="form-group">
                                     <label>Result File (PDF/Image)</label>
                                     <input type="file" id="resultFile" class="form-control" accept="image/*,.pdf" required>
                                 </div>
                             </div>
                             <div style="background: var(--off-white); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                                <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Availability (Optional):</strong> Leave blank for always available.</p>
+                                <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Availability (Optional):</strong></p>
                                 <div class="form-row">
-                                    <div class="form-group">
-                                        <label>Start Date</label>
-                                        <input type="datetime-local" id="startTime" class="form-control">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>End Date</label>
-                                        <input type="datetime-local" id="endTime" class="form-control">
-                                    </div>
+                                    <div class="form-group"><label>Start Date</label><input type="datetime-local" id="startTime" class="form-control"></div>
+                                    <div class="form-group"><label>End Date</label><input type="datetime-local" id="endTime" class="form-control"></div>
                                 </div>
                             </div>
-                            <button type="submit" id="uploadBtn" class="btn btn-accent btn-lg">
-                                <i class="fas fa-upload"></i> Upload Result
-                            </button>
+                            <button type="submit" id="uploadBtn" class="btn btn-accent btn-lg"><i class="fas fa-upload"></i> Upload Result</button>
                             <p id="uploadMsg" style="margin-top:1rem; color:green;"></p>
                         </form>
                     </div>
                 </div>
 
-                <!-- Results Section (Hidden by default) -->
+                <!-- Results Section -->
                 <div id="resultsSection" style="display: none;">
                     <div class="page-title">
                         <h1 style="color: #ff6600;">All Uploaded Results</h1>
-                        <p>View, edit, or delete saved student results.</p>
                     </div>
                     <div class="card">
+                        <div class="filter-bar">
+                            <input type="text" id="searchInput" placeholder="Search by Name or Adm No...">
+                            <select id="filterClass">
+                                <option value="">All Classes</option>
+                                <option>Creche</option><option>Playgroup</option><option>Nursery 1</option><option>Nursery 2</option>
+                                <option>Primary 1</option><option>Primary 2</option><option>Primary 3</option><option>Primary 4</option><option>Primary 5</option><option>Primary 6</option>
+                                <option>JSS 1</option><option>JSS 2</option><option>JSS 3</option>
+                                <option>SSS 1</option><option>SSS 2</option><option>SSS 3</option>
+                            </select>
+                        </div>
                         <table id="resultsTable">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
                                     <th>Name</th>
-                                    <th>Adm No</th>
                                     <th>Class</th>
-                                    <th>Status</th>
+                                    <th>Term</th>
+                                    <th>Year</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -206,195 +212,170 @@
         </div>
     </div>
 
-    <!-- MODAL: Edit Result Details -->
+    <!-- MODAL: Edit Result -->
     <div class="modal-overlay" id="editModal">
         <div class="modal-box">
             <button class="modal-close" onclick="closeModal('editModal')">&times;</button>
-            <h3><i class="fas fa-edit"></i> Edit Result Details</h3>
+            <h3><i class="fas fa-edit"></i> Edit Result</h3>
             <form id="editForm" enctype="multipart/form-data">
                 <input type="hidden" id="editId">
-                <div class="form-group">
-                    <label>Admission Number</label>
-                    <input type="text" id="editAdmNo" class="form-control" required>
+                <div class="form-group"><label>Admission Number</label><input type="text" id="editAdmNo" class="form-control" required></div>
+                <div class="form-group"><label>Student Name</label><input type="text" id="editSName" class="form-control" required></div>
+                
+                <div class="form-row" style="grid-template-columns: 1fr 1fr 1fr;">
+                    <div class="form-group">
+                        <label>Class</label>
+                        <select id="editSClass" class="form-control" required>
+                            <option>Creche</option><option>Playgroup</option><option>Nursery 1</option><option>Nursery 2</option>
+                            <option>Primary 1</option><option>Primary 2</option><option>Primary 3</option><option>Primary 4</option><option>Primary 5</option><option>Primary 6</option>
+                            <option>JSS 1</option><option>JSS 2</option><option>JSS 3</option>
+                            <option>SSS 1</option><option>SSS 2</option><option>SSS 3</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Term</label>
+                        <select id="editSTerm" class="form-control" required>
+                            <option>First Term</option><option>Second Term</option><option>Third Term</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Academic Year</label>
+                        <select id="editSYear" class="form-control" required>
+                            <option>2023/2024</option><option>2024/2025</option><option>2025/2026</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Student Name</label>
-                    <input type="text" id="editSName" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label>Class</label>
-                    <input type="text" id="editSClass" class="form-control" required>
-                </div>
+
                 <div class="form-row" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div class="form-group">
-                        <label>Start Date</label>
-                        <input type="datetime-local" id="editStart" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label>End Date</label>
-                        <input type="datetime-local" id="editEnd" class="form-control">
-                    </div>
+                    <div class="form-group"><label>Start Date</label><input type="datetime-local" id="editStart" class="form-control"></div>
+                    <div class="form-group"><label>End Date</label><input type="datetime-local" id="editEnd" class="form-control"></div>
                 </div>
                 
                 <div class="form-group" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--light-gray);">
-                    <label>Change Result File (Optional)</label>
+                    <label>Change File (Optional)</label>
                     <input type="file" id="editResultFile" class="form-control" accept="image/*,.pdf">
-                    <small style="color: var(--text-light); display:block; margin-top:0.5rem;">Leave blank to keep the current uploaded file.</small>
                 </div>
 
-                <button type="submit" id="editSubmitBtn" class="btn btn-Primary btn-lg" style="width: 100%; margin-top: 1rem;">
-                    <i class="fas fa-save"></i> Save Changes
-                </button>
+                <button type="submit" id="editSubmitBtn" class="btn btn-Primary btn-lg" style="width: 100%; margin-top: 1rem;"><i class="fas fa-save"></i> Save Changes</button>
             </form>
         </div>
     </div>
 
     <script>
-        if (sessionStorage.getItem('adminAuthorized') !== 'true') {
-            window.location.href = "/login.html";
-        }
+        if (sessionStorage.getItem('adminAuthorized') !== 'true') { window.location.href = "/login.html"; }
         
         const API_URL = 'https://joladschool.onrender.com/api';
         const ADMIN_KEY = 'mySecretAdminKey123';
-
-        // --- ELEMENTS ---
         const uploadSection = document.getElementById('uploadSection');
         const resultsSection = document.getElementById('resultsSection');
-        
-        // Desktop links
         const navUploadDesk = document.getElementById('navUploadDesk');
         const navResultsDesk = document.getElementById('navResultsDesk');
-        
-        // Mobile links
         const navUploadMob = document.getElementById('navUploadMob');
         const navResultsMob = document.getElementById('navResultsMob');
         const mobileMenu = document.getElementById('mobileMenu');
 
-        // --- HAMBURGER LOGIC ---
-        document.getElementById('hamburgerBtn').addEventListener('click', function() {
-            mobileMenu.classList.toggle('active');
-        });
+        document.getElementById('hamburgerBtn').addEventListener('click', function() { mobileMenu.classList.toggle('active'); });
 
-        // --- SWITCHING VIEWS LOGIC ---
         function showUpload() {
-            uploadSection.style.display = 'block';
-            resultsSection.style.display = 'none';
-            navUploadDesk.classList.add('active');
-            navResultsDesk.classList.remove('active');
-            navUploadMob.classList.add('active');
-            navResultsMob.classList.remove('active');
-            mobileMenu.classList.remove('active'); // Close mobile menu
+            uploadSection.style.display = 'block'; resultsSection.style.display = 'none';
+            navUploadDesk.classList.add('active'); navResultsDesk.classList.remove('active');
+            navUploadMob.classList.add('active'); navResultsMob.classList.remove('active');
+            mobileMenu.classList.remove('active');
         }
 
         function showResults() {
-            resultsSection.style.display = 'block';
-            uploadSection.style.display = 'none';
-            navResultsDesk.classList.add('active');
-            navUploadDesk.classList.remove('active');
-            navResultsMob.classList.add('active');
-            navUploadMob.classList.remove('active');
-            mobileMenu.classList.remove('active'); // Close mobile menu
+            resultsSection.style.display = 'block'; uploadSection.style.display = 'none';
+            navResultsDesk.classList.add('active'); navUploadDesk.classList.remove('active');
+            navResultsMob.classList.add('active'); navUploadMob.classList.remove('active');
+            mobileMenu.classList.remove('active');
             loadResults();
         }
 
-        // Attach to both desktop and mobile links
         navUploadDesk.addEventListener('click', function(e) { e.preventDefault(); showUpload(); });
         navResultsDesk.addEventListener('click', function(e) { e.preventDefault(); showResults(); });
         navUploadMob.addEventListener('click', function(e) { e.preventDefault(); showUpload(); });
         navResultsMob.addEventListener('click', function(e) { e.preventDefault(); showResults(); });
 
-        // --- MODAL LOGIC ---
-        function openModal(id) {
-            document.getElementById(id).classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
+        function openModal(id) { document.getElementById(id).classList.add('active'); document.body.style.overflow = 'hidden'; }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); document.body.style.overflow = ''; }
         document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
-            overlay.addEventListener('click', function(e) {
-                if (e.target === overlay) {
-                    overlay.classList.remove('active');
-                    document.body.style.overflow = '';
-                }
-            });
+            overlay.addEventListener('click', function(e) { if (e.target === overlay) { overlay.classList.remove('active'); document.body.style.overflow = ''; } });
         });
 
-        // --- TABLE LOGIC ---
+        // STORE RESULTS GLOBALLY FOR FILTERING
+        let allResultsData = [];
+
         async function loadResults() {
             var tbody = document.getElementById('resultsTableBody');
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">Loading...</td></tr>';
-
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">Loading...</td></tr>';
             try {
                 var res = await fetch(API_URL + '/admin/results?key=' + ADMIN_KEY);
                 var data = await res.json();
-
-                if (data.results.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">No results found.</td></tr>';
-                    return;
-                }
-
-                tbody.innerHTML = '';
-                data.results.forEach(function(r) {
-                    var date = new Date(r.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-                    var now = new Date();
-                    var status = '<span class="badge badge-success">Available</span>';
-                    
-                    if (r.availabilityStart && r.availabilityEnd) {
-                        if (now < new Date(r.availabilityStart)) status = '<span class="badge" style="background:#ffeeba; color:#856404;">Scheduled</span>';
-                        if (now > new Date(r.availabilityEnd)) status = '<span class="badge" style="background:#f5c6cb; color:#721c24;">Expired</span>';
-                    }
-
-                    tbody.innerHTML += '<tr>' +
-                        '<td data-label="Date">' + date + '</td>' +
-                        '<td data-label="Name"><strong>' + r.studentName + '</strong></td>' +
-                        '<td data-label="Adm No">' + r.admissionNumber + '</td>' +
-                        '<td data-label="Class">' + r.studentClass + '</td>' +
-                        '<td data-label="Status">' + status + '</td>' +
-                        '<td>' +
-                            '<button class="action-btn btn-view" title="View File" onclick="viewFile(\'' + r._id + '\', \'' + r.fileType + '\')"><i class="fas fa-eye"></i></button>' +
-                            '<button class="action-btn btn-edit" title="Edit Details" onclick="openEditModal(\'' + r._id + '\', \'' + r.admissionNumber + '\', \'' + r.studentName + '\', \'' + r.studentClass + '\', \'' + (r.availabilityStart || '') + '\', \'' + (r.availabilityEnd || '') + '\')"><i class="fas fa-edit"></i></button>' +
-                            '<button class="action-btn btn-delete" title="Delete" onclick="deleteResult(\'' + r._id + '\')"><i class="fas fa-trash"></i></button>' +
-                        '</td>' +
-                    '</tr>';
-                });
+                allResultsData = data.results; // Save to global variable
+                renderTable(allResultsData);
             } catch (err) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red">Error loading data</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red">Error loading data</td></tr>';
             }
         }
 
-        // --- VIEW FILE LOGIC ---
+        function renderTable(results) {
+            var tbody = document.getElementById('resultsTableBody');
+            if (results.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">No results found.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = '';
+            results.forEach(function(r) {
+                tbody.innerHTML += '<tr>' +
+                    '<td data-label="Name"><strong>' + r.studentName + '</strong><br><small style="color:gray">' + r.admissionNumber + '</small></td>' +
+                    '<td data-label="Class">' + r.studentClass + '</td>' +
+                    '<td data-label="Term">' + r.term + '</td>' +
+                    '<td data-label="Year">' + r.academicYear + '</td>' +
+                    '<td>' +
+                        '<button class="action-btn btn-view" title="View" onclick="viewFile(\'' + r._id + '\', \'' + r.fileType + '\')"><i class="fas fa-eye"></i></button>' +
+                        '<button class="action-btn btn-edit" title="Edit" onclick="openEditModal(\'' + r._id + '\', \'' + r.admissionNumber + '\', \'' + r.studentName + '\', \'' + r.studentClass + '\', \'' + r.term + '\', \'' + r.academicYear + '\', \'' + (r.availabilityStart || '') + '\', \'' + (r.availabilityEnd || '') + '\')"><i class="fas fa-edit"></i></button>' +
+                        '<button class="action-btn btn-delete" title="Delete" onclick="deleteResult(\'' + r._id + '\')"><i class="fas fa-trash"></i></button>' +
+                    '</td></tr>';
+            });
+        }
+
+        // FILTER LOGIC
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('filterClass').addEventListener('change', applyFilters);
+
+        function applyFilters() {
+            var search = document.getElementById('searchInput').value.toLowerCase();
+            var filterClass = document.getElementById('filterClass').value;
+            
+            var filtered = allResultsData.filter(function(r) {
+                var matchSearch = r.studentName.toLowerCase().includes(search) || r.admissionNumber.toLowerCase().includes(search);
+                var matchClass = filterClass === '' || r.studentClass === filterClass;
+                return matchSearch && matchClass;
+            });
+            
+            renderTable(filtered);
+        }
+
         async function viewFile(id, type) {
             var container = document.getElementById('viewFileContainer');
-            container.innerHTML = '<div style="text-align:center; padding: 2rem;"><i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--Primary-blue);"></i><p style="margin-top:1rem;">Fetching file...</p></div>';
+            container.innerHTML = '<div style="text-align:center; padding: 2rem;"><i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--Primary-blue);"></i><p style="margin-top:1rem;">Fetching...</p></div>';
             openModal('viewModal');
-
             try {
                 var res = await fetch(API_URL + '/admin/result/' + id + '?key=' + ADMIN_KEY);
                 var data = await res.json();
-
                 if (data.success && data.student && data.student.resultFile) {
-                    if (type === 'pdf') {
-                        container.innerHTML = '<iframe src="' + data.student.resultFile + '"></iframe>';
-                    } else {
-                        container.innerHTML = '<img src="' + data.student.resultFile + '" alt="Result Image">';
-                    }
-                } else {
-                    container.innerHTML = '<p style="color: red; text-align:center;">File not found.</p>';
-                }
-            } catch (err) {
-                container.innerHTML = '<p style="color: red; text-align:center;">Error loading file.</p>';
-            }
+                    container.innerHTML = type === 'pdf' ? '<iframe src="' + data.student.resultFile + '"></iframe>' : '<img src="' + data.student.resultFile + '" alt="Result">';
+                } else { container.innerHTML = '<p style="color:red; text-align:center;">File not found.</p>'; }
+            } catch (err) { container.innerHTML = '<p style="color:red; text-align:center;">Error loading.</p>'; }
         }
 
-        // --- EDIT LOGIC ---
-        function openEditModal(id, admNo, name, cls, start, end) {
+        function openEditModal(id, admNo, name, cls, term, year, start, end) {
             document.getElementById('editId').value = id;
             document.getElementById('editAdmNo').value = admNo;
             document.getElementById('editSName').value = name;
             document.getElementById('editSClass').value = cls;
+            document.getElementById('editSTerm').value = term;
+            document.getElementById('editSYear').value = year;
             document.getElementById('editStart').value = start ? start.slice(0, 16) : '';
             document.getElementById('editEnd').value = end ? end.slice(0, 16) : '';
             document.getElementById('editResultFile').value = ''; 
@@ -405,89 +386,48 @@
             e.preventDefault();
             var id = document.getElementById('editId').value;
             var editBtn = document.getElementById('editSubmitBtn');
-            
-            editBtn.disabled = true;
-            editBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            editBtn.disabled = true; editBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
 
             var formData = new FormData();
             formData.append('admissionNumber', document.getElementById('editAdmNo').value);
             formData.append('studentName', document.getElementById('editSName').value);
             formData.append('studentClass', document.getElementById('editSClass').value);
+            formData.append('term', document.getElementById('editSTerm').value);
+            formData.append('academicYear', document.getElementById('editSYear').value);
             formData.append('start', document.getElementById('editStart').value);
             formData.append('end', document.getElementById('editEnd').value);
-            
-            var fileInput = document.getElementById('editResultFile');
-            if (fileInput.files.length > 0) {
-                formData.append('resultFile', fileInput.files[0]);
-            }
+            if (document.getElementById('editResultFile').files.length > 0) { formData.append('resultFile', document.getElementById('editResultFile').files[0]); }
 
             try {
-                var res = await fetch(API_URL + '/admin/results/' + id + '?key=' + ADMIN_KEY, {
-                    method: 'PUT',
-                    body: formData 
-                });
-                
-                if (res.ok) {
-                    alert('Result updated successfully!');
-                    closeModal('editModal');
-                    loadResults();
-                } else {
-                    alert('Error updating result.');
-                }
-            } catch (err) {
-                alert('Network error. Try again.');
-            } finally {
-                editBtn.disabled = false;
-                editBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
-            }
+                var res = await fetch(API_URL + '/admin/results/' + id + '?key=' + ADMIN_KEY, { method: 'PUT', body: formData });
+                if (res.ok) { alert('Updated!'); closeModal('editModal'); loadResults(); } else { alert('Error updating.'); }
+            } catch (err) { alert('Network error.'); }
+            finally { editBtn.disabled = false; editBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes'; }
         });
 
-        // --- UPLOAD LOGIC ---
         document.getElementById('uploadForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            var uploadBtn = document.getElementById('uploadBtn');
-            var uploadMsg = document.getElementById('uploadMsg');
-            
-            uploadBtn.disabled = true;
-            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
-            uploadMsg.textContent = '';
-            uploadMsg.style.color = 'green';
-
+            var uploadBtn = document.getElementById('uploadBtn'); var uploadMsg = document.getElementById('uploadMsg');
+            uploadBtn.disabled = true; uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...'; uploadMsg.textContent = '';
             var formData = new FormData();
             formData.append('admissionNumber', document.getElementById('admNo').value);
             formData.append('studentName', document.getElementById('sName').value);
             formData.append('studentClass', document.getElementById('sClass').value);
+            formData.append('term', document.getElementById('sTerm').value);
+            formData.append('academicYear', document.getElementById('sYear').value);
             formData.append('start', document.getElementById('startTime').value);
             formData.append('end', document.getElementById('endTime').value);
             formData.append('resultFile', document.getElementById('resultFile').files[0]);
-
             try {
-                var res = await fetch(API_URL + '/admin/upload?key=' + ADMIN_KEY, {
-                    method: 'POST',
-                    body: formData
-                });
+                var res = await fetch(API_URL + '/admin/upload?key=' + ADMIN_KEY, { method: 'POST', body: formData });
                 var data = await res.json();
-                uploadMsg.textContent = data.message || 'Success!';
-                document.getElementById('uploadForm').reset();
-            } catch (err) {
-                uploadMsg.textContent = 'Error uploading. Please try again.';
-                uploadMsg.style.color = 'red';
-            } finally {
-                uploadBtn.disabled = false;
-                uploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Result';
-            }
+                uploadMsg.textContent = data.message || 'Success!'; document.getElementById('uploadForm').reset();
+            } catch (err) { uploadMsg.textContent = 'Error uploading.'; uploadMsg.style.color = 'red'; }
+            finally { uploadBtn.disabled = false; uploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Result'; }
         });
 
-        // --- DELETE LOGIC ---
         async function deleteResult(id) {
-            if (confirm('Are you sure you want to delete this result? This cannot be undone.')) {
-                try {
-                    await fetch(API_URL + '/admin/results/' + id + '?key=' + ADMIN_KEY, { method: 'DELETE' });
-                    loadResults();
-                } catch (err) {
-                    alert('Error deleting.');
-                }
-            }
+            if (confirm('Delete this result?')) { try { await fetch(API_URL + '/admin/results/' + id + '?key=' + ADMIN_KEY, { method: 'DELETE' }); loadResults(); } catch (err) { alert('Error.'); } }
         }
     </script>
 </body>
