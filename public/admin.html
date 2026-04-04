@@ -16,7 +16,7 @@
     /* Layout */
     .admin-wrapper { display: flex; min-height: 100vh; }
     
-    /* Sidebar */
+    /* Sidebar - Fixed to always show */
     .sidebar {
       width: 260px;
       background: linear-gradient(180deg, var(--Primary-blue-dark) 0%, var(--Primary-blue) 100%);
@@ -25,6 +25,9 @@
       flex-direction: column;
       flex-shrink: 0;
       box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+      min-height: 100vh; /* Ensure it stays tall */
+      position: sticky; /* Stay visible on scroll */
+      top: 0;
     }
     .sidebar-header {
       padding: 2rem;
@@ -70,7 +73,7 @@
     .btn-logout:hover { background: #dc3545; border-color: #dc3545; }
 
     /* Main Content */
-    .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
+    .main-content { flex: 1; padding: 2rem; overflow-y: auto; background: #f4f7f6; }
     .page-header { margin-bottom: 2rem; }
     .page-header h1 { color: var(--Primary-blue); margin: 0; }
     
@@ -156,12 +159,15 @@
       color: #6c757d;
     }
 
-    /* Responsive */
+    /* Responsive - Simple Scroll for mobile */
     @media (max-width: 768px) {
       .admin-wrapper { flex-direction: column; }
-      .sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; }
-      .sidebar-header { display: none; }
-      .nav-menu { width: 100%; display: flex; justify-content: center; padding: 0.5rem; }
+      .sidebar {
+        width: 100%;
+        min-height: auto;
+        position: relative;
+      }
+      .nav-menu { display: flex; flex-wrap: wrap; justify-content: center; }
       .nav-item { padding: 0.75rem 1.5rem; border-bottom: 3px solid transparent; border-left: none; }
       .nav-item.active { border-bottom-color: var(--accent-orange); }
       .sidebar-footer { display: none; }
@@ -257,7 +263,6 @@
         <div class="card">
           <div class="card-header">
             <h3><i class="fas fa-history"></i> Saved Results</h3>
-                <!-- Search Input could go here if needed -->
           </div>
           <div class="table-container">
             <table>
