@@ -87,27 +87,33 @@ app.post('/get-result', async (req, res) => {
   } catch(e) { res.status(500).json({success:false}); }
 });
 
-// Admin Login
+// ADMIN LOGIN
 app.post('/admin/login', async (req, res) => {
-  try {
-    // 1. Check if data exists
-    if(!req.body.username || !req.body.password) return res.status(400).json({ message: 'Missing credentials' });
+  console.log("LOGIN HIT!"); // Log 1
 
-    // 2. Find User
-    const a = await Admin.findOne({ username: req.body.username });
-    if (!a) return res.status(400).json({ message: 'User not found' });
-    
-    // 3. Check Password
-    if (a.password !== req.body.password) return res.status(400).json({ message: 'Invalid Password' });
+  // 1. Check Body
+  if(!req.body) return res.status(400).send('No body');
+  console.log("Body exists"); // Log 2
 
-    // 4. Generate Token
-    const token = jwt.sign({ id: a._id }, JWT_SECRET, { expiresIn: '24h' });
-    res.json({ success: true, token, username: a.username });
-
-  } catch(e) { 
-    console.error("LOGIN ERROR:", e); 
-    res.status(500).json({ message: e.message }); 
+  const { username, password } = req.body;
+  
+  // 2. Find User
+  const user = await Admin.findOne({ username });
+  if (!user) {
+      console.log("User not found"); // Log 3
+      return res.status(404).json({ message: 'User not found' });
   }
+  
+  // 3. Check Password
+  if (user.password !== password) {
+      console.log("Wrong password"); // Log 4
+      return res.status(401).json({ message: 'Invalid credentials' });
+  }
+
+  // 4. Success
+  console.log("Success!"); // Log 5
+  const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '24h' });
+  res.json({ success: true, token, username: user.username });
 });
 
 // Upload
