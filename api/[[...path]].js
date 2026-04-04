@@ -100,4 +100,9 @@ app.put('/admin/results/:id', auth, up.single('pdf'), async (req, res) => {
   } catch(e) { res.status(500).json({success:false}); }
 });
 
-export default app;
+// CATCH ALL HANDLER
+// This ensures /api/login works even if Vercel is confused
+export default async function handler(req, res) {
+  // This passes the request to our Express app
+  return app(req, res);
+}
