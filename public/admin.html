@@ -126,6 +126,10 @@
   </div>
 
   <script>
+        // SECURITY LOCK - Put this first!
+    if (sessionStorage.getItem('adminAuthorized') !== 'true') {
+      window.location.href = "login.html"; // Kick them out if not logged in
+    }
     // IMPORTANT: Change this to your live Render URL
     const API_URL = 'https://joladschool.onrender.com/api';
     const ADMIN_KEY = 'mySecretAdminKey123'; // Must match your .env variable
@@ -202,6 +206,7 @@
 
     // Initialize
     loadResults();
+    
   </script>
 </body>
 </html>
