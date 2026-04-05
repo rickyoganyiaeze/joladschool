@@ -1,5 +1,5 @@
 {
-  "name": "joladschool",
+  "name": "jotladschool",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,16 +8,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rickyoganyiaeze/joladschool.git"
+    "url": "git+https://github.com/rickyoganyiaeze/jotladschool.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/rickyoganyiaeze/joladschool/issues"
+    "url": "https://github.com/rickyoganyiaeze/jotladschool/issues"
   },
-  "homepage": "https://github.com/rickyoganyiaeze/joladschool#readme",
+  "homepage": "https://github.com/rickyoganyiaeze/jotladschool#readme",
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^17.4.0",

@@ -1,5 +1,5 @@
 // ========================================
-// jolad GROUP OF SCHOOLS - MAIN JAVASCRIPT
+// jotlad GROUP OF SCHOOLS - MAIN JAVASCRIPT
 // ========================================
 
 document.addEventListener('DOMContentLoaded', function() {
