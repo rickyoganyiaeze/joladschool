@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | jotlad Schools</title>
+    <title>Admin Dashboard | Jotlad Schools</title>
     <base href="/">
     <link rel="icon" type="image/png" href="images/favicon.jpeg">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -79,7 +79,7 @@
 
     <div class="admin-container">
         <aside class="sidebar">
-            <h2 style="color: white;">jotlad Admin</h2>
+            <h2 style="color: white;">Jotlad Admin</h2>
             <ul>
                 <li><a href="index.html"><i class="fas fa-globe"></i> View Website</a></li>
                 <li><a href="#" class="active" id="navUploadDesk"><i class="fas fa-upload"></i> Upload Result</a></li>
@@ -91,7 +91,7 @@
         <div style="flex: 1; display: flex; flex-direction: column;">
             <div class="mobile-header">
                 <div class="mobile-header-content">
-                    <h2><i class="fas fa-user-shield"></i> jotlad Admin</h2>
+                    <h2><i class="fas fa-user-shield"></i> Jotlad Admin</h2>
                     <button class="hamburger" id="hamburgerBtn"><i class="fas fa-bars"></i></button>
                 </div>
             </div>
@@ -264,7 +264,7 @@
     <script>
         if (sessionStorage.getItem('adminAuthorized') !== 'true') { window.location.href = "/login.html"; }
         
-        const API_URL = 'https://jotladschool.onrender.com/api';
+        const API_URL = 'https://Jotladschool.onrender.com/api';
         const ADMIN_KEY = 'mySecretAdminKey123';
         const uploadSection = document.getElementById('uploadSection');
         const resultsSection = document.getElementById('resultsSection');
